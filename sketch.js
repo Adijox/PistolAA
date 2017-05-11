@@ -14,7 +14,7 @@ var yscroll;
 var time2 = 0;
 var collitimer1 = 0;
 var collitimer2 = 0;
-var uno = 0;
+
 var img;
 var worldmap;
 var rmmap1;
@@ -30,14 +30,15 @@ var music = [];
 var heart = [];
 var heartx = 20;
 var rdmusic;
-var knock1 = false;
+var collision1 = false;
+var collision2 = false;
 var bullets = [];
  var momentum1 = 1;
  var momentum2 = 1;
 var shootleft = false;
 var shootright = false;
 var reload = 0;
-
+var sound = [];
 
 setInterval(draw, 5);
 setInterval(Timer, 100);
@@ -55,6 +56,9 @@ function preload() {
     music[4] = loadSound("music/music4.mp3");
     heart[1] = loadImage("images/heart1.png");
     heart[2] = loadImage("images/heart2.png");
+    sound[1] = loadSound("sound/Shot1.wav");
+    sound[2] = loadSound("sound/Shot2.wav");
+    sound[3] = loadSound("sound/Shot3.wav");
 
 }
 
@@ -80,7 +84,10 @@ function setup() {
     music[rdmusic].loop(2);
     rmmap1 = random(1, 300);
     rmmap2 = random(1, 300);
-    print(width, height);
+    sound[1].setVolume(0.75);
+    sound[2].setVolume(0.75);
+    sound[3].setVolume(0.75);
+   
 }
 
 function draw() {
@@ -89,7 +96,7 @@ function draw() {
     if(600 > y && y > -1300){
      image(worldmap, 550, 100 + scroller, 1500, 1500, 0, 0);
     }
-    if(-300 > y && y > -2800) {
+    if(-250 > y && y > -2800) {
     image(worldmap, 550, -1400 + scroller, 1500, 1500);
     }
     if(-1200 > y && y > -4300) {
@@ -107,9 +114,9 @@ function draw() {
     Collision();
 //    Pause();
     Life();
-    
-
-
+    Reload();
+    music[rdmusic].setVolume(1, 0.25);
+     
 
 }
 function Timer() {
@@ -175,7 +182,8 @@ function Move() {
 
     var xspeed = xmove + xkb;
     var yspeed = ymove + yscroll + ykb;
-            
+    ykb = 0;
+    xkb = 0;
     x += xspeed;
     y += yspeed;
     noStroke();
@@ -205,40 +213,60 @@ function Collision() {
         d *= -1;
         if(x - bodyWidth < houses[i].x + (houses[i].width) && houses[i].y - houses[i].length < d + bodyHeight && d - bodyHeight < houses[i].y + houses[i].length) {
             console.log('collision' + ' ' + i);
-            knock1 = true;
-            var collision1 = true;
+            var shock1 = true;
+            collision1 = true;
         }
      }
 
     for (var j = -4000; j < 100; j += 100) {
            if(x + bodyWidth > houses2[j].x - (houses2[j].width) && houses2[j].y - houses2[j].length < d + bodyHeight && d - bodyHeight < houses2[j].y + houses2[j].length) {
             console.log('collision' + ' ' + j);
-               var collision2 = true;
+               var shock2 = true;
+               collision2 = true;
         }
     }
    
    
     fill(255, 100);
-    if(collision1 || collision2) {
+    if(shock1 || shock2) {
         fill(200, 40, 10);
         life -= 1;
+        shock1 = false;
+        shock2 = false;
     }
 //    rect(x, y, bodyWidth, bodyHeight);
-    if(knock1) {
-        if(uno == 0){
+    if(collision1) {
+        if(collitimer1 > 30){
             collitimer1 = 1;
-            uno = 1;
+            
         }
         xkb = 10 / collitimer1;
         ykb = 10 / collitimer1;
-        print(collitimer1);
+        
     }
-    if(uno == 1 && collitimer1 > 30) {
-        knock1 = false;
-        uno = 0;
+    if(collision2) {
+        if(collitimer2 > 30){
+            collitimer2 = 1;
+            
+        }
+        xkb = -10 / collitimer2;
+        ykb = 10 / collitimer2;
+        
+    }
+    if(collitimer1 > 25 && collision1) {
+        
+         collision1 = false;
+        
         xkb = 0;
         ykb = 0;
     }
+    if(collitimer2 > 25 && collision2) {
+        
+    collision2 = false;
+        xkb = 0;
+        ykb = 0;
+    }
+    print(collision1, collision2);
     
 }
 
@@ -287,14 +315,44 @@ function Pause() {
  function keyPressed() {
     
     if(keyCode === 37 && reload <= 0) {
-        bullets.push(new Bullet(x, y, 225, (-reload/100)));
+        bullets.push(new Bullet(x, y, 225, (-reload/200)));
+        if(-200 < reload && reload < 0) {
+            music[rdmusic].setVolume(0.8);
+            sound[1].play();
+            ykb = 5;
+        }
+        if(-399 < reload && reload < -200) {
+            music[rdmusic].setVolume(0.8);
+            sound[2].play();
+            ykb = 10;
+        }
+        if(reload === -400) {
+            music[rdmusic].setVolume(0.8);
+            sound[3].play();
+            print('3');
+            ykb = 50;
+        }
         shootleft = true;
         
         
     }
     if(keyCode === 39 && reload <= 0) {
-        bullets.push(new Bullet(x, y, 315, (-reload/100)));
-        
+        bullets.push(new Bullet(x, y, 315, (-reload/200)));
+         if(-200 < reload && reload < 0) {
+             music[rdmusic].setVolume(0.8);
+            sound[1].play();
+             ykb = 5;
+        }
+        if(-399 < reload && reload < -200) {
+            music[rdmusic].setVolume(0.8);
+            sound[2].play();
+            ykb = 10;
+        }
+        if(reload === -400) {
+            music[rdmusic].setVolume(0.8);
+            sound[3].play();
+            ykb = 50;
+        }
         shootright = true;
     }
     }
@@ -313,10 +371,7 @@ function Shoot() {
         reload -=1;
         
     }
-    push();
-        rectMode(CORNER);
-    rect(width/2, 30 - scroller, -reload/2, 30);
-    pop();
+    
     for (var l = 0; l < bullets.length; l++) {
         
         bullets[l].update();
@@ -346,4 +401,29 @@ function Shoot() {
 //        }
      
     }
+}
+function Reload() {
+    push();
+        rectMode(CORNER);
+    if(reload > 0) {
+        var mapr = reload;
+        var mapr2 = reload;
+        var colc = color(map(mapr, 200, 0, 255, 100), map(mapr2, 200, 0, 0, 50), 50);
+        fill(colc);
+        rect(width/2, 30 - scroller, -reload/2, 30);
+    }
+    if(reload < 0) {
+        var mapr = reload;
+        var mapr2 = reload;
+        var colc = color(map(mapr, 0, -400, 100, 20), map(mapr2, 0, -400, 50, 255),50);
+        fill(colc);
+        rect(width/2, 30 - scroller, -reload/2, 30);
+    }
+    noFill();
+    stroke(51);
+    strokeWeight(5);
+    rect(width/2 - 100, 30 - scroller, 300, 30);
+    line(width/2, 30 - scroller, width/2, 60 - scroller);
+//    rect(width/2, 30 - scroller, -reload/2, 30);
+    pop();
 }

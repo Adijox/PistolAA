@@ -39,13 +39,14 @@ var shootleft = false;
 var shootright = false;
 var reload = 0;
 var sound = [];
-
-setInterval(draw, 5);
-setInterval(Timer, 100);
-setInterval(Timer2, 5);
-setInterval(spriteClock, 150);
-setInterval(spriteClock2, 100);
-setInterval(colliClock, 5);
+var enemies = [];
+var lagfix = 1;
+setInterval(draw, 5 * lagfix);
+setInterval(Timer, 100 * lagfix);
+setInterval(Timer2, 5 * lagfix);
+setInterval(spriteClock, 150 *lagfix);
+setInterval(spriteClock2, 100 * lagfix);
+setInterval(colliClock, 5 * lagfix);
 function preload() {
     house1 = loadImage("images/house1.png");
     worldmap = loadImage("images/map.png")
@@ -72,10 +73,16 @@ function setup() {
     for (var j = -4000; j < 100; j += 100) {
         houses2[j] = new House(width, j, ceil(random(0, 3)), 'right');
     }
+    for(var p = 0; p < 4; p++) {
+        enemies[p] = new Enemy(random(50, width - 50), random(10, 90));
+    }
+    
     rectMode(RADIUS);
     scroller = 0;
     x = width / 2;
     y = height / 2;
+    
+    
     coordcopy = createVector(x, y);
     imageMode(CENTER);
     noSmooth();
@@ -93,16 +100,16 @@ function setup() {
 function draw() {
    
     background(51);
-    if(600 > y && y > -1300){
+    if(400 > -scroller && -scroller > -1500){
      image(worldmap, 550, 100 + scroller, 1500, 1500, 0, 0);
     }
-    if(-250 > y && y > -2800) {
+    if(-50 > -scroller && -scroller > -3000) {
     image(worldmap, 550, -1400 + scroller, 1500, 1500);
     }
-    if(-1200 > y && y > -4300) {
+    if(-1000 > -scroller && -scroller > -4500) {
     image(worldmap, 550, -2900 + scroller, 1500, 1500);
     }
-    if(-2100 > y && y > -5900) {
+    if(-1900 > -scroller && -scroller > -5700) {
     image(worldmap, 550, -4400 + scroller, 1500, 1500);
     }
     
@@ -115,8 +122,10 @@ function draw() {
 //    Pause();
     Life();
     Reload();
+    EnemyGear();
+    
     music[rdmusic].setVolume(1, 0.25);
-     
+   
 
 }
 function Timer() {
@@ -129,7 +138,7 @@ function Move() {
     maxscroll = 108;
     xmove = 0;
     ymove = 0;
-    var speed = 0.5;
+    var speed = 0.75;
     yscroll = - 0.5;
     if(keyIsDown(81)) {
         if(keyIsDown(90)) {
@@ -173,7 +182,7 @@ function Move() {
     }
     
     if(keyIsDown(83)) {
-        ymove += speed;
+        ymove += 0.5;
                   }
 
     
@@ -266,7 +275,7 @@ function Collision() {
         xkb = 0;
         ykb = 0;
     }
-    print(collision1, collision2);
+//    print(collision1, collision2);
     
 }
 
@@ -329,7 +338,7 @@ function Pause() {
         if(reload === -400) {
             music[rdmusic].setVolume(0.8);
             sound[3].play();
-            print('3');
+            
             ykb = 50;
         }
         shootleft = true;
@@ -376,32 +385,32 @@ function Shoot() {
         
         bullets[l].update();
         
-        
         if(bullets[l].position.x < 0 || bullets[l].position.x > width ) {
             bullets.splice(l, 1);
-            print('test');
+            
             break;
         }
-//        for (var i = -4000; i < 100; i += 100){
-//            if(bullets[l].position.x < houses[i].x + houses[i].width) {
-//                bullets.splice(l, 1);
-//                print('testhouse');
-//                break;
-//            }
-//            break;
-//            for (var j = -4000; j < 100; j += 100){
-//            if(bullets[l].position.x > houses2[j].x - (houses2[j].width/2)) {
-//                bullets.splice(l, 1);
-//                print('testhouse2');
-//                break;
-//            }
-//            
-//        }
-//            
-//        }
-     
+        
+        if("undefined" != typeof bullets[l].lifespan) {
+            if (bullets[l].lifespan > 450){
+            bullets.splice(l, 1);
+            }
+        }
     }
-}
+    
+         for (var p = 0; p < enemies.length; p++) {
+             for (var q = 0; q < enemies[p].bullets.length; q++) {
+            if("undefined" != typeof enemies[p].bullets[q].lifespan) {
+              if(enemies[p].bullets[q].lifespan > 450) {
+                enemies[p].bullets.splice(q, 1);
+            }
+               }
+        }
+         }
+       
+    }
+
+
 function Reload() {
     push();
         rectMode(CORNER);
@@ -426,4 +435,17 @@ function Reload() {
     line(width/2, 30 - scroller, width/2, 60 - scroller);
 //    rect(width/2, 30 - scroller, -reload/2, 30);
     pop();
+}
+function EnemyGear() {
+    for(var p = 0; p < 4; p++) {
+        if(enemies[p].y > y) {
+            enemies[p].up = true;
+        } else {
+            enemies[p].up = false;
+        }
+        enemies[p].update();
+        enemies[p].shoot(); 
+    }
+    
+//    print(renemy.time);
 }

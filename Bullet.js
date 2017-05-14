@@ -2,8 +2,8 @@ function Bullet(x, y, angle, bscale) {
     this.angle = angle;
     this.x = x;
     this.y = y;
-    this.width = 10 * bscale;
-    this.length = 22 * bscale;
+    this.width = (10 * bscale) * 0.75;
+    this.length = (22 * bscale) * 0.75;
     this.lifespan = 0;
     if(this.width < 10 || this.length < 22) {
         this.width = 10;

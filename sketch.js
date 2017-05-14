@@ -21,7 +21,10 @@ var rmmap1;
 var rmmap2;
 var spritescroll = 0;
 var spritescroll2= 0;
+var espritescroll = 0;
+var espritescroll2= 0;
 var maxscroll = 108;
+var emaxscroll = 103;
 var xkb = 0;
 var ykb = 0;
 var life = 6;
@@ -41,6 +44,11 @@ var reload = 0;
 var sound = [];
 var enemies = [];
 var lagfix = 1;
+var enemyimg;
+var escroller = 26; 
+var rmIA;
+
+
 setInterval(draw, 5 * lagfix);
 setInterval(Timer, 100 * lagfix);
 setInterval(Timer2, 5 * lagfix);
@@ -49,8 +57,9 @@ setInterval(spriteClock2, 100 * lagfix);
 setInterval(colliClock, 5 * lagfix);
 function preload() {
     house1 = loadImage("images/house1.png");
-    worldmap = loadImage("images/map.png")
+    worldmap = loadImage("images/map.png");
     img = loadImage("images/spritesheet.png");
+    enemyimg = loadImage("images/enemy.png");
     music[1] = loadSound("music/music1.mp3");
     music[2] = loadSound("music/music2.mp3");
     music[3] = loadSound("music/music3.mp3");
@@ -142,28 +151,28 @@ function Move() {
     yscroll = - 0.5;
     if(keyIsDown(81)) {
         if(keyIsDown(90)) {
-            image(img, x, y, 62, 130, spritescroll, 146, 31, 43);
+            image(img, x, y, 46.5, 97.5, spritescroll, 146, 31, 43);
         }else {
-        image(img, x, y, 62, 130, spritescroll, 49, 31, 43);
+        image(img, x, y, 46.5, 97.5, spritescroll, 49, 31, 43);
         }
     }else
     if(keyIsDown(68)) {
     
         if(keyIsDown(90)) {
-            image(img, x, y, 62, 130, spritescroll, 146, 31, 43);
+            image(img, x, y, 46.5, 97.5, spritescroll, 146, 31, 43);
         }else {
-        image(img, x, y, 62, 130, spritescroll, 96, 31, 43);
+        image(img, x, y, 46.5, 97.5, spritescroll, 96, 31, 43);
         }
     }else if(keyIsDown(90)) {
-        image(img, x, y, 62, 130, spritescroll2, 146, 31, 43);
+        image(img, x, y, 46.5, 97.5, spritescroll2, 146, 31, 43);
         }
     else if(keyIsDown(83)) {
 
         maxscroll = 0;
-        image(img, x, y, 62, 130, spritescroll, 0, 31, 43);
+        image(img, x, y, 46.5, 97.5, spritescroll, 0, 31, 43);
     
     }else {
-        image(img, x, y, 62, 130, spritescroll, 146, 31, 43);
+        image(img, x, y, 46.5, 97.5, spritescroll, 146, 31, 43);
     }
     
     if(keyIsDown(90)) {
@@ -285,11 +294,23 @@ function spriteClock() {
         spritescroll = 0;
         
 }
+    
+    espritescroll += escroller;
+    if(espritescroll > emaxscroll) {
+        espritescroll = 0;
+        
+}
+
 }
 function spriteClock2() {
     spritescroll2 += 32;
     if(spritescroll2 > maxscroll) {
         spritescroll2 = 0;
+
+}
+    espritescroll2 += 32;
+    if(espritescroll2 > emaxscroll) {
+        espritescroll2 = 0;
 
 }
 }
@@ -437,11 +458,15 @@ function Reload() {
     pop();
 }
 function EnemyGear() {
+    rmIA = random(0, 1);
     for(var p = 0; p < 4; p++) {
-        if(enemies[p].y > y) {
+        if(rmIA < 0.5) {
             enemies[p].up = true;
-        } else {
-            enemies[p].up = false;
+        }
+        if(x > enemies[p].x && enemies[p].left === false && rmIA > 0.5) {
+            enemies[p].right = true;
+        }else {
+            enemies[p].right = false;
         }
         enemies[p].update();
         enemies[p].shoot(); 

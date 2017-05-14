@@ -7,8 +7,8 @@ var houses = [];
 var houses2 = [];
 var scroller;
 var house1;
-var bodyWidth = 25;
-var bodyHeight = 59;
+var bodyWidth = 18.75;
+var bodyHeight = 44.25;
 var ycopy;
 var yscroll;
 var time2 = 0;
@@ -47,7 +47,17 @@ var lagfix = 1;
 var enemyimg;
 var escroller = 26; 
 var rmIA;
-
+var dashl;
+var dashr;
+var doublepress = 0;
+var doubletime = 0;
+var dashtime = 0;
+var ondash = false;
+var invitimer;
+var lifechange = 0;
+var invincible = false;
+var twinktime = 0;
+var noimage = false;
 
 setInterval(draw, 5 * lagfix);
 setInterval(Timer, 100 * lagfix);
@@ -56,7 +66,8 @@ setInterval(spriteClock, 150 *lagfix);
 setInterval(spriteClock2, 100 * lagfix);
 setInterval(colliClock, 5 * lagfix);
 function preload() {
-    house1 = loadImage("images/house1.png");
+    
+    dashl = loadImage("images/dash.png");
     worldmap = loadImage("images/map.png");
     img = loadImage("images/spritesheet.png");
     enemyimg = loadImage("images/enemy.png");
@@ -126,6 +137,7 @@ function draw() {
     
     Shoot();
     Move();
+    Dash();
     Houses();
     Collision();
 //    Pause();
@@ -134,11 +146,16 @@ function draw() {
     EnemyGear();
     
     music[rdmusic].setVolume(1, 0.25);
-   
+   rect(x, y, bodyWidth, bodyHeight);
 
 }
 function Timer() {
     time += 1;
+    doubletime += 1;
+    dashtime +=1;
+    invitimer += 1;
+    print(invincible, '  ', invitimer);
+    twinktime += 1;
 }
 function Timer2() {
     time2 += 1;
@@ -149,17 +166,22 @@ function Move() {
     ymove = 0;
     var speed = 0.75;
     yscroll = - 0.5;
+    
+    if(noimage === false){
     if(keyIsDown(81)) {
         if(keyIsDown(90)) {
             image(img, x, y, 46.5, 97.5, spritescroll, 146, 31, 43);
         }else {
         image(img, x, y, 46.5, 97.5, spritescroll, 49, 31, 43);
+            
+            
         }
     }else
     if(keyIsDown(68)) {
     
         if(keyIsDown(90)) {
             image(img, x, y, 46.5, 97.5, spritescroll, 146, 31, 43);
+            
         }else {
         image(img, x, y, 46.5, 97.5, spritescroll, 96, 31, 43);
         }
@@ -173,6 +195,7 @@ function Move() {
     
     }else {
         image(img, x, y, 46.5, 97.5, spritescroll, 146, 31, 43);
+        }
     }
     
     if(keyIsDown(90)) {
@@ -248,7 +271,7 @@ function Collision() {
     fill(255, 100);
     if(shock1 || shock2) {
         fill(200, 40, 10);
-        life -= 1;
+        lifechange -= 1;
         shock1 = false;
         shock2 = false;
     }
@@ -334,6 +357,28 @@ function Life() {
           }
 
         }
+    if(lifechange != 0 && invincible === false) {
+        invitimer = 0;
+        life += lifechange;
+        lifechange = 0;
+        print('aie');
+        if(invitimer < 20) {
+            invincible = true;
+        }
+        
+    }
+    if(invincible && twinktime % 2 === 0) {
+        noimage = true;
+        print('clign clign');
+    }else{
+        noimage = false;
+    }
+    
+    if(invitimer > 20) {
+            invincible = false;
+        }
+    lifechange = 0;
+    
 }   
 function Pause() {
     fill(15, 42, 200);
@@ -343,7 +388,27 @@ function Pause() {
     }
 
  function keyPressed() {
-    
+     if(keyCode === 81) {
+         if(doubletime > 3) {
+         doubletime = 0;
+             doublepress = 0;
+         }
+         doublepress += 1;
+         
+         if(doublepress == 2 && doubletime < 3) {
+             xkb -= 70;
+              dashtime = 0;
+
+             ondash = true;
+             
+             doublepress = 0;
+             
+         }
+         
+     }
+     
+     
+     
     if(keyCode === 37 && reload <= 0) {
         bullets.push(new Bullet(x, y, 225, (-reload/200)));
         if(-200 < reload && reload < 0) {
@@ -473,4 +538,14 @@ function EnemyGear() {
     }
     
 //    print(renemy.time);
+}
+function Dash() {
+   
+             if(dashtime < 3 && ondash){
+             image(dashl, x + 10, y, 46.5, 97.5);
+
+                 
+                 
+             }
+             
 }

@@ -523,8 +523,9 @@ function Reload() {
     pop();
 }
 function EnemyGear() {
-    rmIA = random(0, 1);
+    
     for(var p = 0; p < 4; p++) {
+      rmIA = random(0, 1);
         if(rmIA < 0.5) {
             enemies[p].up = true;
         }
@@ -532,6 +533,11 @@ function EnemyGear() {
             enemies[p].right = true;
         }else {
             enemies[p].right = false;
+        }
+      if(x < enemies[p].x && enemies[p].right === false && rmIA > 0.5) {
+            enemies[p].left = true;
+        }else {
+            enemies[p].left = false;
         }
         enemies[p].update();
         enemies[p].shoot(); 

@@ -15,6 +15,7 @@ function Enemy(x, y) {
     this.timed = 0;
     this.timel = 0;
     this.timer = 0;
+    this.spritetime = 0;
     var shootlist = [100, 300, 700, 800, 900];
     var shootangle = [90, 90, 90 + random(-5, 5), 90 + random(-5, 5), 90 + random(-5, 5)];
     this.bullets = [];
@@ -102,7 +103,13 @@ function Enemy(x, y) {
             
         if(this.time === shootlist[i]) {
             this.bullets.push(new Bullet(this.x, this.y, shootangle[i], 0.7));
-            emaxscroll = 200;
+            if(this.spritetime > 30) {
+                this.spritetime = 0;
+            }
+            if(this.spritetime < 30) {
+            image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll, 132, 25, 43.5);
+            }
+                emaxscroll = 200;
             espritescroll = 176;
             
         }
@@ -114,6 +121,7 @@ function Enemy(x, y) {
         this.timed += 1;
         this.timel += 1;
         this.timer += 1;
+        this.spritetime += 1;
     }
     
 }

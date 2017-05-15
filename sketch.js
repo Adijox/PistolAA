@@ -146,7 +146,7 @@ function draw() {
     EnemyGear();
     
     music[rdmusic].setVolume(1, 0.25);
-   rect(x, y, bodyWidth, bodyHeight);
+   //rect(x, y, bodyWidth, bodyHeight);
 
 }
 function Timer() {

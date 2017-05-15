@@ -107,7 +107,7 @@ function Enemy(x, y) {
                 this.spritetime = 0;
             }
             if(this.spritetime < 30) {
-            image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll, 132, 25, 43.5);
+            image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll, 0, 25, 43.5);
             }
                 emaxscroll = 200;
             espritescroll = 176;

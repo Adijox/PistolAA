@@ -58,6 +58,8 @@ var lifechange = 0;
 var invincible = false;
 var twinktime = 0;
 var noimage = false;
+var dashSlow = 0;
+
 
 setInterval(draw, 5 * lagfix);
 setInterval(Timer, 100 * lagfix);
@@ -147,6 +149,12 @@ function draw() {
     
     music[rdmusic].setVolume(1, 0.25);
    //rect(x, y, bodyWidth, bodyHeight);
+ if(onslow) {
+  speed = 0.2;
+ }
+ if(dashSlow > 300){
+  speed = 0.75;  
+ }
 
 }
 function Timer() {
@@ -156,6 +164,7 @@ function Timer() {
     invitimer += 1;
     print(invincible, '  ', invitimer);
     twinktime += 1;
+    dashSlow += 1; 
 }
 function Timer2() {
     time2 += 1;
@@ -549,7 +558,12 @@ function Dash() {
    
              if(dashtime < 3 && ondash){
              image(dashl, x + 10, y, 46.5, 97.5);
-
+             if(dashSlow > 200) {
+              dashSlow = 0;
+             }
+ if(dashSlow<200) {
+  onslow = true;
+ }
                  
                  
              }

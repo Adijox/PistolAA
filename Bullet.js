@@ -2,12 +2,17 @@ function Bullet(x, y, angle, bscale) {
     this.angle = angle;
     this.x = x;
     this.y = y;
+    this.bscale = bscale;
+    if(this.bscale < 0.5) {
+        this.bscale = 0.5;
+    }
+    
     this.width = (10 * bscale) * 0.75;
-    this.length = (22 * bscale) * 0.75;
+    this.height = (22 * bscale) * 0.75;
     this.lifespan = 0;
-    if(this.width < 10 || this.length < 22) {
-        this.width = 10;
-        this.length = 22;
+    if(this.width < 6.5 || this.height < 14.3) {
+        this.width = 6.5;
+        this.height = 14.3;
     }
     this.position = createVector(this.x, this.y);
     this.velocity = createVector();
@@ -39,28 +44,28 @@ function Bullet(x, y, angle, bscale) {
         stroke(58, 33, 30);
         fill(75, 71, 71);
             beginShape();
-            vertex(0 - (this.length/2), 0 -(this.width/2));
-            vertex(0 - (this.length/2), 0 + (this.width/2));
+            vertex(0 - (this.height/2), 0 -(this.width/2));
+            vertex(0 - (this.height/2), 0 + (this.width/2));
             vertex(0, 0 + (this.width/2));
             vertex(0 - 3 , 0 + (this.width/2) + 2);
-            vertex(0 + (this.length/2), 0 + (this.width/2));
-            vertex(0 + (this.length/2), 0 - (this.width/2));
+            vertex(0 + (this.height/2), 0 + (this.width/2));
+            vertex(0 + (this.height/2), 0 - (this.width/2));
             vertex(0 - 3, 0 - (this.width/2) - 2);
             vertex(0, 0 - (this.width/2));
-            vertex(0 - (this.length/2), 0 -(this.width/2));
+            vertex(0 - (this.height/2), 0 -(this.width/2));
            endShape();
         stroke(58, 33, 30);
         fill(167, 18, 1);
-        arc(0 + (this.length/2), 0, 15, this.width, PI+HALF_PI, HALF_PI,CHORD);
+        arc(0 + (this.height/2), 0, 15, this.width, PI+HALF_PI, HALF_PI,CHORD);
         beginShape();
-        vertex(0 - (this.length/2) - 10, 0 - (this.width/2));
-        vertex(0 - (this.length/2), 0);
-        vertex(0 -(this.length/2), 0 - (this.width/2));
+        vertex(0 - (this.height/2) - 10, 0 - (this.width/2));
+        vertex(0 - (this.height/2), 0);
+        vertex(0 -(this.height/2), 0 - (this.width/2));
         endShape();
         beginShape();
-        vertex(0 - (this.length/2), 0)
-        vertex(0 - (this.length/2) - 10, 0 + (this.width/2));
-        vertex(0 - (this.length/2), 0 + (this.width/2));
+        vertex(0 - (this.height/2), 0)
+        vertex(0 - (this.height/2) - 10, 0 + (this.width/2));
+        vertex(0 - (this.height/2), 0 + (this.width/2));
         endShape();
         pop();
  

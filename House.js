@@ -8,7 +8,8 @@ function House(x, y, type, side) {
         this.width = 100;
        
     }else if(this.type == 2) {
-        this.width = 140
+        this.width = 140;
+        
     }else if(this.type == 3) {
         this.width = 60
        }else {
@@ -36,18 +37,21 @@ function House(x, y, type, side) {
         
     noStroke();
     if(this.type == 1) {
-        fill(1);
-        rect(this.x, this.y, this.width, this.length);
+//        fill(1);
+//        rect(this.x, this.y, this.width, this.length);
+        image(houses[1], this.x, this.y, this.width * 2, this.length * 2);
 //        image(house1, this.x, this.y, 50, 100)
     }
     if(this.type == 2) {
     
-        fill(100);
-        rect(this.x, this.y, this.width, this.length);
+//        fill(100);
+//        rect(this.x, this.y, this.width, this.length);
+        image(houses[2], this.x, this.y, this.width * 2, this.length * 2);
     }
     if(this.type == 3) {
-        fill(245);
-        rect(this.x, this.y, this.width, this.length);
+//        fill(245);
+//        rect(this.x, this.y, this.width, this.length);
+        image(houses[3], this.x, this.y, this.width * 2, this.length * 2);
     }
     
         

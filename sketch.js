@@ -83,7 +83,13 @@ var tanktime = 5000;
 var tankfull = 5000;
 var enemyexist;
 var gameo = false;
+var dmgdealt = 0;
+var setupdone = false;
+var lvl = 1;
+var click = false;
+var scrollbump = 0.5;
 setInterval(draw, 5 * lagfix);
+//setInterval(Game, 5 * lagfix);
 setInterval(lagdraw, 1000/60 * lagfix);
 setInterval(Timer, 100 * lagfix);
 setInterval(Timer2, 5 * lagfix);
@@ -142,6 +148,7 @@ function setup() {
     
     coordcopy = createVector(x, y);
     imageMode(CENTER);
+    textAlign(CENTER);
     noSmooth();
     rdmusic = ceil(random(0, 13));
    
@@ -160,11 +167,51 @@ function setup() {
     for(var i = 0; i< enemyexist.length; i++) {
         enemyexist[i] = false;
     }
-   
+  
 }
 
 function draw() {
-       background(51);
+    background(51, 200, 135);
+    
+    textSize(35);
+    text("Level \n" + lvl, 450, 350);
+    fill(51);
+    ellipse(380, 350, 30, 30);
+    ellipse(520, 350, 30, 30);
+    if(dist(mouseX, mouseY, 380, 350) < 15 && click) {
+        fill(255);
+        if(lvl > 1) {
+        lvl -= 1;
+        }
+    }
+    if(dist(mouseX, mouseY, 520, 350) < 15 && click) {
+        fill(255);
+        if(lvl < 2) {
+        lvl += 1;
+        }
+    }
+    if(lvl == 2) {
+        enemytimes = [20, 100, 100, 250, 300, 350, 400];
+        enemytypes = [1, 1, 1, 1, 1, 1, 1];
+        enemyx = [450, 200, 700, 150, 300, 450, 600];
+        enemyy = [150, 200, 200, 50, 80, 110, 130];
+        life = 6;
+        scrollbump = 0.75;
+        speed = 0.75;
+    }
+    if(lvl == 1) {
+        enemytimes = [20, 150, 300, 350, 350];
+        enemytypes = [1, 1, 1, 1, 1];
+        enemyx = [450, 200, 700, 250, 300];
+        enemyy = [30, 200, 150, 50, 50];
+        life = 8;
+        scrollbump = 0.5;
+        speed = 0.5;
+    }
+    if(time > 120) {
+         setupdone = true;
+    }
+    if(setupdone) {
     drawing = true;
     if(400 > -scroller && -scroller > -1500){
      image(worldmap, 550, 100 + scroller, 1500, 1500);
@@ -198,9 +245,12 @@ function draw() {
 //    reload = -20;
   
 //   rect(x, y, bodyWidth, bodyHeight);
-
+    }
+click = false;
 }
-
+function Game() {
+   
+}
 function lagdraw() {
 
     
@@ -220,7 +270,7 @@ function Timer() {
     if(drawing) {
     enemytime += 1;
     }
-   
+    
 }
 function Timer2() {
     time2 += 1;
@@ -305,8 +355,11 @@ function Move() {
     fill(51, 54, 245);
 
 }
+function mouseClicked() {
+    click = true;
+}
 function Scroll() {
-    scroller += 0.5;
+    scroller += scrollbump;
     translate(0, scroller);
    
      
@@ -387,7 +440,10 @@ function Collision() {
         if(bullets[i].position.x - bullets[i].width < enemies[j].x + enemies[j].width && bullets[i].position.x + bullets[i].width > enemies[j].x - enemies[j].width && bullets[i].position.y - bullets[i].height < enemies[j].y + enemies[j].height && bullets[i].position.y + bullets[i].height > enemies[j].y - enemies[j].height) {
             if(enemies[j].recover === false) {
                 enemies[j].health -= 5 * bullets[i].bscale;
+                dmgdealt += 5 * bullets[i].bscale;
                 enemies[j].recover = true;
+                bullets.splice(i, 1);
+                break;
                 print(enemies[j].health);
 //                fill(200, 25, 30);
             }
@@ -495,14 +551,14 @@ function Pause() {
          }
          doublepress1 += 1;
          
-         if(doublepress1 == 2 && doubletime1 < 3) {
+         if(doublepress1 == 2 && doubletime1 < 3 && reload < 0) {
              xkb -= 70;
               dashtime = 0;
 
              ondash1 = true;
              dash.play();
              if(reload < 100) {
-             reload += 100;
+             reload += 200;
              }
              doublepress1 = 0;
 
@@ -516,14 +572,14 @@ function Pause() {
          }
          doublepress2 += 1;
          
-         if(doublepress2 == 2 && doubletime2 < 3) {
+         if(doublepress2 == 2 && doubletime2 < 3 && reload < 0) {
              xkb += 70;
               dashtime = 0;
 
              ondash2 = true;
              dash.play();
              if(reload < 100) {
-             reload += 100;
+             reload += 200;
              }
              doublepress2 = 0;
          }
@@ -812,9 +868,11 @@ function gameOver() {
     var uno = false;
     if(!uno){
         location.reload();
+        
         alert('Your Score is : ' + enemytime + '\n Please close this alert to restart'); 
-        uno = true;
         location.reload();
+        uno = true;
+        
     }
        
     

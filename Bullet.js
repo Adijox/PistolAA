@@ -3,6 +3,7 @@ function Bullet(x, y, angle, bscale) {
     this.x = x;
     this.y = y;
     this.bscale = bscale;
+    this.power = bscale;
     if(this.bscale < 0.5) {
         this.bscale = 0.5;
     }
@@ -23,7 +24,12 @@ function Bullet(x, y, angle, bscale) {
     this.update = function() {
         this.lifespan += 1;
         this.acceleration = createVector(1, 0);
-        this.acceleration.setMag(bscale/50);
+//        if(this.power != 0.0001) {
+//        this.acceleration.setMag(this.bscale/50);
+//        }else {
+        this.acceleration.setMag(this.power/50);
+
+
         
         if(this.acceleration.mag() < 1/100) {
             this.acceleration.setMag(0.01);
@@ -41,6 +47,7 @@ function Bullet(x, y, angle, bscale) {
         push();
         translate(this.position.x, this.position.y);
         rotate(radians(this.angle));
+        strokeWeight(1);
         stroke(58, 33, 30);
         fill(75, 71, 71);
             beginShape();

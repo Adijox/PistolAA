@@ -87,7 +87,11 @@ var dmgdealt = 0;
 var setupdone = false;
 var lvl = 1;
 var click = false;
+var fonts = [];
+var backg = [];
 var scrollbump = 0.5;
+var obstacles;
+var obs;
 setInterval(draw, 5 * lagfix);
 //setInterval(Game, 5 * lagfix);
 setInterval(lagdraw, 1000/60 * lagfix);
@@ -97,7 +101,8 @@ setInterval(spriteClock, 150 *lagfix);
 setInterval(spriteClock2, 100 * lagfix);
 setInterval(colliClock, 5 * lagfix);
 function preload() {
-    
+    backg[1] = loadImage('images/background.jpg');
+    backg[2] = loadImage('images/background2.jpg');
     dashl = loadImage("images/dash.png");
     dashr = loadImage("images/dash2.png");
     worldmap = loadImage("images/map.png");
@@ -106,8 +111,11 @@ function preload() {
     houses[1] = loadImage("images/house1.png");
     houses[2] = loadImage("images/house2.png");
     houses[3] = loadImage("images/house3.png");
+    obstacles = loadImage("images/obstacle.png");
     heart[1] = loadImage("images/heart1.png");
     heart[2] = loadImage("images/heart2.png");
+    fonts[1] = loadFont('fonts/FullBlast.otf');
+    fonts[2] = loadFont('fonts/3D.ttf');
     for(var i = 1; i< 11; i++) {
         music[i] = loadSound("music/music" + i + ".mp3");
     }
@@ -149,6 +157,7 @@ function setup() {
     coordcopy = createVector(x, y);
     imageMode(CENTER);
     textAlign(CENTER);
+    textFont(fonts[1]);
     noSmooth();
     rdmusic = ceil(random(0, 13));
    
@@ -167,37 +176,50 @@ function setup() {
     for(var i = 0; i< enemyexist.length; i++) {
         enemyexist[i] = false;
     }
-  
+  obs = new Obstacle(600, 50, 1);
 }
 
 function draw() {
+    if(!setupdone) {
     background(51, 200, 135);
-    
+    image(backg[2], 450, 375, 900, 750);
+    image(backg[1], 450, 375, 900, 650);
+    Music();
+    stroke(77, 32, 32);
+    strokeWeight(4);
+    line(0, 50, 900, 50);
+    line(0, 700, 900, 700);
     textSize(35);
+    textFont(fonts[1]);
     text("Level \n" + lvl, 450, 350);
+    
     fill(51);
-    ellipse(380, 350, 30, 30);
-    ellipse(520, 350, 30, 30);
-    if(dist(mouseX, mouseY, 380, 350) < 15 && click) {
+    ellipse(380, 350, 40, 40);
+    ellipse(520, 350, 40, 40);
+    rect(450, 600, 150, 60, 20);
+    fill(255);
+    
+    text('GO!',450, 610);
+    textFont(fonts[2]);
+//    textSize(30);
+        textSize(40);
+//        noStroke();
+    text("<", 380, 360);
+    text(">", 520, 360);
+    if(dist(mouseX, mouseY, 380, 350) < 20 && click) {
         fill(255);
         if(lvl > 1) {
         lvl -= 1;
         }
     }
-    if(dist(mouseX, mouseY, 520, 350) < 15 && click) {
+    if(dist(mouseX, mouseY, 520, 350) < 20 && click) {
         fill(255);
-        if(lvl < 2) {
+        if(lvl < 3) {
         lvl += 1;
         }
     }
-    if(lvl == 2) {
-        enemytimes = [20, 100, 100, 250, 300, 350, 400];
-        enemytypes = [1, 1, 1, 1, 1, 1, 1];
-        enemyx = [450, 200, 700, 150, 300, 450, 600];
-        enemyy = [150, 200, 200, 50, 80, 110, 130];
-        life = 6;
-        scrollbump = 0.75;
-        speed = 0.75;
+    if(mouseX < 600 && mouseX > 300 && mouseY > 540 && mouseY < 660 && click) {
+         setupdone = true;
     }
     if(lvl == 1) {
         enemytimes = [20, 150, 300, 350, 350];
@@ -208,10 +230,29 @@ function draw() {
         scrollbump = 0.5;
         speed = 0.5;
     }
-    if(time > 120) {
-         setupdone = true;
+    if(lvl == 2) {
+        enemytimes = [20, 100, 100, 250, 300, 350, 400];
+        enemytypes = [1, 1, 1, 1, 1, 1, 1];
+        enemyx = [450, 200, 700, 150, 300, 450, 600];
+        enemyy = [150, 200, 200, 50, 80, 110, 130];
+        life = 7;
+        scrollbump = 0.55;
+        speed = 0.55;
+    }
+    if(lvl == 3) {
+        enemytimes = [20, 100, 100, 250, 300, 350, 400];
+        enemytypes = [1, 1, 1, 1, 1, 1, 1];
+        enemyx = [450, 200, 700, 150, 300, 450, 600];
+        enemyy = [150, 200, 200, 50, 80, 110, 130];
+        life = 6;
+        scrollbump = 0.75;
+        speed = 0.75;
+    }
+    
+
     }
     if(setupdone) {
+        background(51);
     drawing = true;
     if(400 > -scroller && -scroller > -1500){
      image(worldmap, 550, 100 + scroller, 1500, 1500);
@@ -240,6 +281,7 @@ function draw() {
     Reload();
     EnemyGear();
     Music();
+        obs.update();
 //    music[rdmusic].loop(2);
     
 //    reload = -20;

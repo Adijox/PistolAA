@@ -27,7 +27,7 @@ function Bullet(x, y, angle, bscale) {
 //        if(this.power != 0.0001) {
 //        this.acceleration.setMag(this.bscale/50);
 //        }else {
-        this.acceleration.setMag(this.power/50);
+        this.acceleration.setMag(this.power - 0.9* this.power);
 
 
         

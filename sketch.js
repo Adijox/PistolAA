@@ -45,7 +45,7 @@ var enemies = [];
 var lagfix = 1;
 var enemyimg;
 var escroller = 26; 
-var rmIA = new Array(4);
+var rmIA = new Array(8);
 var speed;
 var dashl;
 var dashr;
@@ -73,6 +73,9 @@ var enemytimes = [20, 100, 100, 250, 300, 350, 400];
 var enemytypes = [1, 1, 1, 1, 1, 1, 1];
 var enemyx = [450, 200, 700, 150, 300, 450, 600];
 var enemyy = [150, 200, 200, 50, 80, 110, 130];
+var obstaclesx = [];
+var obstaclesy = [];
+var obstaclestypes = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 var enemytime = 0;
 var drawing = false;
 var speedmode = false;
@@ -82,6 +85,7 @@ var tankmode = false;
 var tanktime = 5000;
 var tankfull = 5000;
 var enemyexist;
+var obstaclexist
 var gameo = false;
 var dmgdealt = 0;
 var setupdone = false;
@@ -90,8 +94,8 @@ var click = false;
 var fonts = [];
 var backg = [];
 var scrollbump = 0.5;
-var obstacles;
 var obs;
+var obstacles = [];
 setInterval(draw, 5 * lagfix);
 //setInterval(Game, 5 * lagfix);
 setInterval(lagdraw, 1000/60 * lagfix);
@@ -111,7 +115,7 @@ function preload() {
     houses[1] = loadImage("images/house1.png");
     houses[2] = loadImage("images/house2.png");
     houses[3] = loadImage("images/house3.png");
-    obstacles = loadImage("images/obstacle.png");
+    obs = loadImage("images/obstacle.png");
     heart[1] = loadImage("images/heart1.png");
     heart[2] = loadImage("images/heart2.png");
     fonts[1] = loadFont('fonts/FullBlast.otf');
@@ -176,7 +180,11 @@ function setup() {
     for(var i = 0; i< enemyexist.length; i++) {
         enemyexist[i] = false;
     }
-  obs = new Obstacle(600, 50, 1);
+    obstaclexist = new Array(7);
+    for(var i = 0; i< obstaclexist.length; i++) {
+        obstaclexist[i] = false;
+    }
+ 
 }
 
 function draw() {
@@ -226,6 +234,9 @@ function draw() {
         enemytypes = [1, 1, 1, 1, 1];
         enemyx = [450, 200, 700, 250, 300];
         enemyy = [30, 200, 150, 50, 50];
+        obstaclesx = [200, 100, 790, 300];
+        obstaclesy = [100, -500, -790, -1300];
+        obstaclestypes = [1, 1, 2, 1];
         life = 8;
         scrollbump = 0.5;
         speed = 0.5;
@@ -235,6 +246,9 @@ function draw() {
         enemytypes = [1, 1, 1, 1, 1, 1, 1];
         enemyx = [450, 200, 700, 150, 300, 450, 600];
         enemyy = [150, 200, 200, 50, 80, 110, 130];
+        obstaclesx = [192, 384, 576, 768];
+        obstaclesy = [-500, -500, -500, -500];
+        obstaclestypes = [2, 2, 2, 2];
         life = 7;
         scrollbump = 0.55;
         speed = 0.55;
@@ -244,6 +258,8 @@ function draw() {
         enemytypes = [1, 1, 1, 1, 1, 1, 1];
         enemyx = [450, 200, 700, 150, 300, 450, 600];
         enemyy = [150, 200, 200, 50, 80, 110, 130];
+        obstaclestypes = [2, 2, 2, 2];
+
         life = 6;
         scrollbump = 0.75;
         speed = 0.75;
@@ -253,6 +269,7 @@ function draw() {
     }
     if(setupdone) {
         background(51);
+        print(-scroller + "  et  " + houses[0].y);
     drawing = true;
     if(400 > -scroller && -scroller > -1500){
      image(worldmap, 550, 100 + scroller, 1500, 1500);
@@ -266,22 +283,24 @@ function draw() {
     if(-1900 > -scroller && -scroller > -5700) {
     image(worldmap, 550, -4400 + scroller, 1500, 1500);
     }
-    
+    Scenario();
     Scroll(); 
     
     Shoot();
     Houses();
+    Obstacleo();
     Move();
     Dash();
-    
+    EnemyGear();
     Collision();
+        
 //    Pause();
-    Scenario();
+
     Life();
     Reload();
-    EnemyGear();
+    
     Music();
-        obs.update();
+        
 //    music[rdmusic].loop(2);
     
 //    reload = -20;
@@ -322,7 +341,7 @@ function Move() {
     xmove = 0;
     ymove = 0;
     
-    yscroll = - 0.5;
+    yscroll = - scrollbump;
     
     if(noimage === false){
     if(keyIsDown(81)) {
@@ -395,7 +414,12 @@ function Move() {
     y += yspeed;
     noStroke();
     fill(51, 54, 245);
-
+    if(y - bodyHeight > -scroller + height) {
+        lifechange -= 3;
+    }
+    strokeWeight(200);
+    line(100, 0, 100, -scroller + width/2);
+    print(y + " " + scroller);
 }
 function mouseClicked() {
     click = true;
@@ -450,8 +474,8 @@ function Collision() {
             collitimer1 = 1;
             
         }
-        xkb = 10 / collitimer1;
-        ykb = 10 / collitimer1;
+        xkb += 10 / collitimer1;
+        ykb += 10 / collitimer1;
         
     }
     if(collision2) {
@@ -459,8 +483,8 @@ function Collision() {
             collitimer2 = 1;
             
         }
-        xkb = -10 / collitimer2;
-        ykb = 10 / collitimer2;
+        xkb += -10 / collitimer2;
+        ykb += 10 / collitimer2;
         
     }
     if(collitimer1 > 25 && collision1) {
@@ -526,7 +550,7 @@ function spriteClock2() {
         spritescroll2 = 0;
 
 }
-    espritescroll2 += 32;
+    espritescroll2 += escroller;
     if(espritescroll2 > emaxscroll) {
         espritescroll2 = 0;
 
@@ -634,16 +658,16 @@ function Pause() {
         if(-200 < reload && reload < 0) {
             
             sound[1].play();
-            ykb = 5;
+            ykb += 5;
         }
         if(-399 < reload && reload < -200) {
             sound[2].play();
-            ykb = 10;
+            ykb += 10;
         }
         if(reload === -400) {
             sound[3].play();
             
-            ykb = 50;
+            ykb += 50;
         }
         shootleft = true;
         
@@ -787,12 +811,12 @@ function Reload() {
     
 }
 function EnemyGear() {
-   
+    
     
     
     
     for(var p = 0; p < enemies.length; p++) {
-         
+         enemies[p].speed = speed - 0.1;
         for(var q = 0; q < rmIA.length; q++) {
         rmIA[q] = random(0, 1);
         }
@@ -826,6 +850,16 @@ function EnemyGear() {
             enemies[p].up = true;
                 }
             }
+            if(rmIA[3] < 0.05) {
+            if(enemies[p].y - scroller> y - scroller + 40) {
+            enemies[p].up = true;
+                }
+            }
+        if(rmIA[4] < 0.001) {
+            if(enemies[p].y < y - scroller + 60 && y < 200) {
+            enemies[p].down = true;
+                }
+            }
             if(enemies[p].x - enemies[p].width*1.5 < 140) {
                 enemies[p].left = false;
                 enemies[p].right = true;
@@ -834,6 +868,18 @@ function EnemyGear() {
                 enemies[p].left = true;
                 enemies[p].right = false;
             }
+        for(var q = 0; q < enemies.length; q++) {
+        if(enemies[p].x + enemies[p].width > enemies[q].x - enemies[q].width && enemies[p].x + enemies[p].width < enemies[q].x && enemies[p].y + enemies[p].width > enemies[q].y - enemies[q].width && enemies[p].y - enemies[p].width < enemies[q].y + enemies[q].width) {
+            enemies[p].right = false;
+            enemies[p].left = true;
+            
+            }
+        if(enemies[p].x - enemies[p].width < enemies[q].x + enemies[q].width && enemies[p].x - enemies[p].width > enemies[q].x && enemies[p].y - enemies[p].width < enemies[q].y + enemies[q].width && enemies[p].y + enemies[p].width > enemies[q].y - enemies[q].width) {
+            enemies[p].left = false;
+            enemies[p].right = true;
+           
+            }
+        }
         enemies[p].update();
         enemies[p].shoot(); 
         if(enemies[p].health < 0) {
@@ -897,6 +943,12 @@ function Scenario() {
             }
            
         }
+        for(var i = 0; i < obstaclesx.length; i++) {
+            if(obstaclexist[i] === false) {
+            obstacles.push(new Obstacle(obstaclesx[i],obstaclesy[i], obstaclestypes[i]));
+                obstaclexist[i] = true;
+            }
+        }
     }
 }
 
@@ -920,3 +972,24 @@ function gameOver() {
     
 }
  
+function Obstacleo() {
+    for(var i = 0; i< obstacles.length; i++) {
+        obstacles[i].update();
+//        print(obstacles[i].health);
+        if(x > obstacles[i].x - obstacles[i].width && x < obstacles[i].x + obstacles[i].width && y > obstacles[i].y - obstacles[i].height && y < obstacles[i].y + obstacles[i].height) {
+            ykb += 1;
+        }
+    
+    for(var j = 0; j < enemies.length; j++) {
+        for(var k = 0; k < enemies[j].bullets.length;k++) {
+            if(enemies[j].bullets[k].position.x + enemies[j].bullets[k].width> obstacles[i].x - obstacles[i].width && enemies[j].bullets[k].position.x - enemies[j].bullets[k].width < obstacles[i].x + obstacles[i].width && enemies[j].bullets[k].position.y - enemies[j].bullets[k].height< obstacles[i].y + obstacles[i].height && enemies[j].bullets[k].position.y  + enemies[j].bullets[k].height> obstacles[i].y - obstacles[i].height) {
+                enemies[j].bullets.splice(k, 1);
+                }
+            }
+        }
+    if(obstacles[i].health <= 0) {
+        obstacles.splice(i, 1);
+    }
+    }
+    
+}

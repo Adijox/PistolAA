@@ -7,7 +7,7 @@ function Enemy(x, y) {
     this.recover = false;
     this.recotime = 0;
     this.type = 1;
-    this.width = 22.5;
+    this.width = 20.5;
     this.height = 37.5;
     this.up = false;
     this.down = false;
@@ -79,10 +79,10 @@ function Enemy(x, y) {
                 this.unod = false;
                 
             }
-            if(this.timed < 100) {
+            if(this.timed < 200) {
             this.y += this.speed;
             }
-            if(this.timed > 100){
+            if(this.timed > 200){
                 this.down = false;
                 this.unod = true;
             }
@@ -96,7 +96,7 @@ function Enemy(x, y) {
         emaxscroll = 103;
         if(this.left) {
         if(this.up) {
-            image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll, 132, 25, 43.5);
+            image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll2, 132, 25, 43.5);
         }else {
         image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll, 44, 25, 43.5);
         }
@@ -104,12 +104,12 @@ function Enemy(x, y) {
     if(this.right) {
     
         if(this.up) {
-            image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll, 132, 25, 43.5);
+            image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll2, 132, 25, 43.5);
         }else {
         image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll, 88, 25, 43.5);
         }
     }else if(this.up) {
-        image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll, 132, 25, 43.5);
+        image(enemyimg,  this.x,  this.y, 46.5, 97.5, espritescroll2, 132, 25, 43.5);
         }
     else if(this.down) {
 
@@ -128,12 +128,22 @@ function Enemy(x, y) {
             this.recotime += 1;
 //            fill(200, 100, 20);
 //            rect(this.x, this.y, 20, 20);
-            if(this.recotime > 100) {
+            if(this.recotime > 10) {
                 this.recover = false;
             }
         }
 //        stroke(255);
-//        text(this.health, this.x, this.y - 10)
+//        text(this.health, this.x, this.y - 10);
+        var emap = map(this.health, 0, 30, 0, 50);
+        var efill = map(this.health, 0, 30, 0, 255);
+        var efill2 = map(this.health, 0, 30, 255, 0);
+        push();
+        fill(efill2, efill, 50, 200);
+        rectMode(CORNER);
+        if(this.health >= 0) {
+        rect(this.x - 25, this.y - this.height - 20, emap, 5);
+        }
+        pop();
     }
     this.shoot = function() {
         for (var i = 0; i < shootlist.length; i++) {

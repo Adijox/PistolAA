@@ -151,7 +151,7 @@ function Enemy(x, y) {
 
             
         if(this.time === shootlist[i]) {
-            this.bullets.push(new Bullet(this.x, this.y, shootangle[i], 0.0001));
+            this.bullets.push(new Bullet(this.x, this.y, shootangle[i], 0.000000001 * enemyforce));
             emaxscroll = 200;
             espritescroll = 176;
             

@@ -96,6 +96,7 @@ var backg = [];
 var scrollbump = 0.5;
 var obs;
 var obstacles = [];
+var enemyforce = 1;
 setInterval(draw, 5 * lagfix);
 //setInterval(Game, 5 * lagfix);
 setInterval(lagdraw, 1000/60 * lagfix);
@@ -240,6 +241,7 @@ function draw() {
         life = 8;
         scrollbump = 0.5;
         speed = 0.5;
+        enemyforce = 1;
     }
     if(lvl == 2) {
         enemytimes = [20, 100, 100, 250, 300, 350, 400];
@@ -252,6 +254,7 @@ function draw() {
         life = 7;
         scrollbump = 0.55;
         speed = 0.55;
+        enemyforce = 100;
     }
     if(lvl == 3) {
         enemytimes = [20, 100, 100, 250, 300, 350, 400];
@@ -263,13 +266,13 @@ function draw() {
         life = 6;
         scrollbump = 0.75;
         speed = 0.75;
+        enemyforce = 10000;
     }
     
 
     }
     if(setupdone) {
         background(51);
-        print(-scroller + "  et  " + houses[0].y);
     drawing = true;
     if(400 > -scroller && -scroller > -1500){
      image(worldmap, 550, 100 + scroller, 1500, 1500);
@@ -390,7 +393,7 @@ function Move() {
     }
     
     if(keyIsDown(83)) {
-        ymove += 0.5;
+        ymove += scrollbump;
                   }
 
 //    if(speedmode) {
@@ -414,12 +417,11 @@ function Move() {
     y += yspeed;
     noStroke();
     fill(51, 54, 245);
-    if(y - bodyHeight > -scroller + height) {
+    if(y - bodyHeight > -scroller + height || y + bodyHeight < -scroller) {
         lifechange -= 3;
     }
     strokeWeight(200);
     line(100, 0, 100, -scroller + width/2);
-    print(y + " " + scroller);
 }
 function mouseClicked() {
     click = true;

@@ -103,6 +103,7 @@ var onspace = false;
 var bumpcopy;
 var tertext = "";
 var tertext2 = "";
+var drawtime = 0;
 setInterval(draw, 5 * lagfix);
 //setInterval(Game, 5 * lagfix);
 setInterval(lagdraw, 1000/60 * lagfix);
@@ -183,11 +184,11 @@ function setup() {
     txt[1] = createDiv('Sound Volume');
     txt[2] = createDiv('Press \'M\' to change music : ' + rdmusic);
     
-    enemyexist = new Array(70);
+    enemyexist = new Array(700);
     for(var i = 0; i< enemyexist.length; i++) {
         enemyexist[i] = false;
     }
-    obstaclexist = new Array(70);
+    obstaclexist = new Array(700);
     for(var i = 0; i< obstaclexist.length; i++) {
         obstaclexist[i] = false;
     }
@@ -195,6 +196,7 @@ function setup() {
 }
 
 function draw() {
+    
     if(!setupdone) {
     background(51, 200, 135);
     image(backg[2], 450, 375, 900, 750);
@@ -223,18 +225,32 @@ function draw() {
     text(">", 520, 360);
     if(dist(mouseX, mouseY, 380, 350) < 20 && click) {
         fill(255);
-        if(lvl > 1) {
+        if(lvl > 0) {
         lvl -= 1;
         }
     }
     if(dist(mouseX, mouseY, 520, 350) < 20 && click) {
         fill(255);
-        if(lvl < 3) {
+        if(lvl < 4) {
         lvl += 1;
         }
     }
     if(mouseX < 600 && mouseX > 300 && mouseY > 540 && mouseY < 660 && click) {
          setupdone = true;
+    }
+        if(lvl == 0) {
+        enemytimes = [];
+        enemytypes = [];
+        enemyx = [];
+        enemyy = [];
+        obstaclesx = [];
+        obstaclesy = [];
+        obstaclestypes = [];
+        life = 1;
+        scrollbump = 0.95;
+        speed = 0.55;
+        enemyforce = 100;
+            onterrain = true;
     }
     if(lvl == 1) {
         enemytimes = [20, 150, 300, 350, 350];
@@ -272,6 +288,21 @@ function draw() {
                       0, 96, 192, 288, 384, 480, 576, 672, 768, 864, 960, 1056];
         obstaclesy = [-200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200,
                       -300, -300, -300, -300, -300, -300, -300, -300, -300, -300, -300, -300];
+        obstaclestypes = [2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2,
+                          2, 2, 2, 1, 2, 2, 2, 2, 2, 2 ,2];
+
+        life = 6;
+        scrollbump = 0.75;
+        speed = 0.75;
+        enemyforce = 10000;
+    }
+        if(lvl == 4) {
+        enemytimes = [20, 100, 100, 250, 300, 350, 400];
+        enemytypes = [1, 1, 1, 1, 1, 1, 1];
+        enemyx = [450, 200, 700, 150, 300, 450, 600];
+        enemyy = [150, 200, 200, 50, 80, 110, 130];
+        obstaclesx = [768, 768, 672, 624, 576, 672, 288, 432, 336, 624, 624, 144, 240, 336, 432, 528, 528, 432, 336, 240, 384, 192, 288, 384, 480, 432, 336, 720, 624, 624, 528, 528, 480];
+        obstaclesy = [4, -46, -46, 4, -71, -121, -342, -392, -517, -442, -342, -840, -840, -840, -840, -840, -790, -790, -765, -790, -890, -1649, -1699, -1649, -1699, -1749, -1749, -1994, -1994, -2044, -2069, -1969, -2019];
         obstaclestypes = [2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2,
                           2, 2, 2, 1, 2, 2, 2, 2, 2, 2 ,2];
 
@@ -322,25 +353,36 @@ function draw() {
 //    reload = -20;
   
 //   rect(x, y, bodyWidth, bodyHeight);
-    }
+    
+    if(lvl === 0) {
+//        for(var i = 0; i < enemies.length; i++) {
+//            enemies.splice(i, 1);
+//        }
+
     if(onterrain) {
-    life = 6;
+    life = 3;
     fill(25, 41, 36, 100);
-    rect(mouseX, mouseY - scroller, 48, 25);
+    rect(48*round(mouseX/48), 25*round(mouseY/25) - scroller, 48, 25);
         if(onspace) {
             if(scrollbump != 0) {
             bumpcopy = scrollbump;
             }
             scrollbump = 0;
         }
-        for(var i = 0; i<terrain.length; i++) {
-            rect(terrain[i][0],terrain[i][1] - terrain[i][3],48, 25)
-        }
-    if(click) {
-        terrain.push([mouseX, mouseY, time, scroller]);
+        
+    if(click && drawtime > 10) {
+        terrain.push([48*round(mouseX/48), round(25*round((mouseY/25)) - scroller), scroller]);
         print(terrain);
     }
+        for(var i = 0; i<terrain.length; i++) {
+            fill(50, 200, 63);
+            rect(terrain[i][0],terrain[i][1]/* - terrain[i][2]*/,48, 25);
+        }
     }
+    }
+        drawtime += 1;
+    }
+
 click = false;
     
 }
@@ -1010,23 +1052,35 @@ function gameOver() {
 //        text('Your Score is : ' + enemytime, width/2, height/2);
 //    }
     var uno = false;
+    var uno2 = false;
     if(!uno){
         location.reload();
         
-            for(var i = 0; i< terrain.length; i++) {
-                tertext += terrain[i][0] + " ";
-           
-            }
-            for(var i = 0; i< terrain.length; i++) {
-                tertext2 += terrain[i][1] + " ";
-
-            }
-         alert(tertext);
-        alert(tertext2);
-        alert('Your Score is : ' + enemytime + '\n Please close this alert to restart'); 
-        location.reload();
-        uno = true;
+        for(var i = 0; i< terrain.length; i++) {
+            tertext += terrain[i][0] + ", ";
+            tertext2 += terrain[i][1] + ", ";
+            
         }
+        if(tertext != "") {
+        location.reload();
+            if(!uno2){
+        confirm(tertext);
+        confirm(tertext2);
+        
+                uno2 = true;
+            }
+        
+        }else{
+//        confirm('Your Score is : ' + enemytime + '\n Please close this alert to restart'); 
+            if(!uno) {
+            if (confirm('Your Score is : ' + enemytime + '\n Please close this alert to restart') == true) {
+        location.reload();
+}
+                uno = true;
+            }
+        location.reload();
+            }
+        }   
     }
        
     

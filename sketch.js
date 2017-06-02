@@ -97,6 +97,12 @@ var scrollbump = 0.5;
 var obs;
 var obstacles = [];
 var enemyforce = 1;
+var onterrain = false;
+var terrain = [];
+var onspace = false;
+var bumpcopy;
+var tertext = "";
+var tertext2 = "";
 setInterval(draw, 5 * lagfix);
 //setInterval(Game, 5 * lagfix);
 setInterval(lagdraw, 1000/60 * lagfix);
@@ -177,11 +183,11 @@ function setup() {
     txt[1] = createDiv('Sound Volume');
     txt[2] = createDiv('Press \'M\' to change music : ' + rdmusic);
     
-    enemyexist = new Array(7);
+    enemyexist = new Array(70);
     for(var i = 0; i< enemyexist.length; i++) {
         enemyexist[i] = false;
     }
-    obstaclexist = new Array(7);
+    obstaclexist = new Array(70);
     for(var i = 0; i< obstaclexist.length; i++) {
         obstaclexist[i] = false;
     }
@@ -248,9 +254,10 @@ function draw() {
         enemytypes = [1, 1, 1, 1, 1, 1, 1];
         enemyx = [450, 200, 700, 150, 300, 450, 600];
         enemyy = [150, 200, 200, 50, 80, 110, 130];
-        obstaclesx = [192, 384, 576, 768];
-        obstaclesy = [-500, -500, -500, -500];
-        obstaclestypes = [2, 2, 2, 2];
+        obstaclesx = [192, 384, 576, 768, 288, 480, 672, 864,
+                      ];
+        obstaclesy = [-500, -500, -500, -500, -600, -600, -600, -600];
+        obstaclestypes = [2, 2, 2, 2, 2, 2, 2, 2];
         life = 7;
         scrollbump = 0.55;
         speed = 0.55;
@@ -261,7 +268,12 @@ function draw() {
         enemytypes = [1, 1, 1, 1, 1, 1, 1];
         enemyx = [450, 200, 700, 150, 300, 450, 600];
         enemyy = [150, 200, 200, 50, 80, 110, 130];
-        obstaclestypes = [2, 2, 2, 2];
+        obstaclesx = [0, 96, 192, 288, 384, 480, 576, 672, 768, 864, 960, 1056,
+                      0, 96, 192, 288, 384, 480, 576, 672, 768, 864, 960, 1056];
+        obstaclesy = [-200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200,
+                      -300, -300, -300, -300, -300, -300, -300, -300, -300, -300, -300, -300];
+        obstaclestypes = [2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2,
+                          2, 2, 2, 1, 2, 2, 2, 2, 2, 2 ,2];
 
         life = 6;
         scrollbump = 0.75;
@@ -290,8 +302,9 @@ function draw() {
     Scroll(); 
     
     Shoot();
-    Houses();
     Obstacleo();
+    Houses();
+
     Move();
     Dash();
     EnemyGear();
@@ -310,7 +323,26 @@ function draw() {
   
 //   rect(x, y, bodyWidth, bodyHeight);
     }
+    if(onterrain) {
+    life = 6;
+    fill(25, 41, 36, 100);
+    rect(mouseX, mouseY - scroller, 48, 25);
+        if(onspace) {
+            if(scrollbump != 0) {
+            bumpcopy = scrollbump;
+            }
+            scrollbump = 0;
+        }
+        for(var i = 0; i<terrain.length; i++) {
+            rect(terrain[i][0],terrain[i][1] - terrain[i][3],48, 25)
+        }
+    if(click) {
+        terrain.push([mouseX, mouseY, time, scroller]);
+        print(terrain);
+    }
+    }
 click = false;
+    
 }
 function Game() {
    
@@ -612,6 +644,22 @@ function Pause() {
     }
 
  function keyPressed() {
+     if(keyCode === 32) {
+         if(!onspace) {
+         onspace = true;
+         }else {
+             onspace = false;
+             scrollbump = bumpcopy;
+             print(bumpcopy);
+         }
+     }
+     if(keyCode === 85) {
+         if(!onterrain) {
+         onterrain = true;
+         } else {
+             onterrain = false;
+         }
+     } 
      if(keyCode === 81) {
          if(doubletime1 > 3) {
          doubletime1 = 0;
@@ -965,21 +1013,31 @@ function gameOver() {
     if(!uno){
         location.reload();
         
+            for(var i = 0; i< terrain.length; i++) {
+                tertext += terrain[i][0] + " ";
+           
+            }
+            for(var i = 0; i< terrain.length; i++) {
+                tertext2 += terrain[i][1] + " ";
+
+            }
+         alert(tertext);
+        alert(tertext2);
         alert('Your Score is : ' + enemytime + '\n Please close this alert to restart'); 
         location.reload();
         uno = true;
-        
+        }
     }
        
     
-}
+
  
 function Obstacleo() {
     for(var i = 0; i< obstacles.length; i++) {
         obstacles[i].update();
 //        print(obstacles[i].health);
         if(x > obstacles[i].x - obstacles[i].width && x < obstacles[i].x + obstacles[i].width && y > obstacles[i].y - obstacles[i].height && y < obstacles[i].y + obstacles[i].height) {
-            ykb += 1;
+            ykb += scrollbump * 2;
         }
     
     for(var j = 0; j < enemies.length; j++) {
